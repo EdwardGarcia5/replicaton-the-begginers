@@ -1,0 +1,67 @@
+```{r}
+#Your code goes here
+library(ggplot2)
+library(tidyr)
+library(knitr)
+library(plyr)
+library(dplyr)
+library(reshape2)
+library(energy)
+library(cowplot)
+
+
+datasum <- read.csv("summarizedPharmacoData.csv")
+
+
+
+drugAvg <- cellLinesSummary %>% 
+              group_by(cellLine) %>%
+              summarise(mean_auc_CCLE = mean(auc_CCLE),
+                        mean_auc_GDSC = mean(auc_GDSC)) 
+
+ggplot(drugAvg, aes(x=mean_auc_GDSC, y=mean_auc_CCLE)) +
+    geom_point(alpha=0.6) +
+    ggtitle("Average AUC value by cell line (averaged over drugs)")
+
+cellLinesSummary <- cellLinesSummary %>% 
+              mutate(category = paste(sensitivity_GDSC, sensitivity_CCLE)) %>%
+              mutate(category = revalue(category, c("Resistant Resistant" = "Both Resistant",
+                                                    "Sensitive Sensitive" = "Both Sensitive",
+                                                    "Resistant Sensitive" = "GDSC Resistant / CCLE Sensitive",
+                                                    "Sensitive Resistant" = "GDSC Sensitive / CCLE Resistant")))
+ggplot(aes(x=auc_GDSC, y=auc_CCLE, colour=category), data=cellLinesSummary) +
+    geom_point(cex=0.5) + 
+    facet_wrap(facets=~drug) +
+    xlab("GDSC AUC") +
+    ylab("CCLE AUC") +
+    geom_hline(aes(yintercept=cutoff), colour="grey", alpha=0.75, lty=2) +
+    geom_vline(aes(xintercept=cutoff), colour="grey", alpha=0.75, lty=2) 
+
+mcc <- function (study1, study2)
+{
+  BS <- sum(study1 == "Sensitive" & study2 == "Sensitive") 
+  BR <- sum(study1 == "Resistant" & study2 == "Resistant") 
+  SR <- sum(study1 == "Sensitive" & study2 == "Resistant") 
+  RS <- sum(study1 == "Resistant" & study2 == "Sensitive") 
+  
+  if (BS+SR == 0 | BS+RS == 0 | BR+SR == 0 |  BR+RS ==0){
+    mcc <- ((BS*BR)-(SR*RS)) 
+  }else{
+    mcc <- ((BS*BR)-(SR*RS)) / sqrt(exp((log(BS+SR)+log(BS+RS)+log(BR+SR)+log(BR+RS))))
+  }
+  return(mcc)
+}
+
+drugCorrs <- cellLinesSummary %>% 
+  group_by(drug) %>% 
+  summarise(matthews_corr=mcc(sensitivity_GDSC, sensitivity_CCLE))
+
+drugCorrs
+
+ggplot(data=drugCorrs, aes(x=drug, y=matthews_corr)) +
+  geom_bar(stat="identity") + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  xlab("Drug")+
+  ylab("Matthews Correlation Coefficient")
+
+```
