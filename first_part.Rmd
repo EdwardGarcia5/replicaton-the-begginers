@@ -16,7 +16,8 @@ library(energy)
 ## Questions
 
 1. How many cell-lines are contained in the data?
-There are 288 cell lines contained in the data.
+
+Hay 288 líneas de células contenidas en la data.
 
 ```{r}
 data <- read.csv("rawPharmacoData.csv")
@@ -25,7 +26,8 @@ length( levels( data$cellLine ) )
 ```
 
 2. What drug concentrations were used in each study?
-in each study there were used 32 GDSC concentrations and 8 CClE concentrations.
+
+8 CCLE y 32 GDSC
 
 ```{r}
 tapply( data$concentration, data$study, function(x){
@@ -38,6 +40,9 @@ distributed, can also make evident potential
 problems with the data. Plot a histogram
 of drug viabilities. Does it look as one would
 expect from the description of the data?
+
+No porque debido a que las drogas son anti cáncer no debe de haber tanta bioabilidad.
+
 ```{r}
 ggplot( pharmacoData, aes( log2(viability) ) ) +
     geom_histogram(fill = "white", colour="black") +
@@ -49,19 +54,32 @@ expected range according to the definition of viability (e.g. above 0
 and below 100)? Try to come up with explanations about
 the values that are out of range. Are these due to technical
 issues? Biology?
+
+27611.
+Los valores que salen del rango pueden explicarse debido a la diferencia que hay a
+consecuencia del tratamiento. Se esperan que las células cuyos valores están por debajo de 100
+tengan issues técnicos de salud debido al margen de error que hay en viabilidad. Las drogas no
+afectaron la proliferación en células cuyos valores eran menores a 100.
+
 ```{r}
 sum( data$viability > 0 & data$viability < 100)
 ```
 
 5. Read the csv file containing the summarized data files. What kind
 of variables are in the data? What does each column represents?
+
+cellLine, drug, ic50_CCLE, auc_CCLE, ic50_GDSC y auc_GDSC.
+
 ```{r}
 datasum <- read.csv("summarizedPharmacoData.csv")
 
 str(datasum)
 ```
+
 6. Plot a histogram of the viability scores as a function of the drug
 doses. Are stronger drug concentrations consistent with lower viability scores?
+
+No todos, como la droga placlitaxel que es una de las que menor viabilidad tiene.
 ```{r}
 ggplot( pharmacoData, aes( viability, group=drug, colour=drug) ) +
     geom_density(fill="white", lwd=2, alpha=0.1) + xlim(0, 170)
