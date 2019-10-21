@@ -19,6 +19,8 @@ library(energy)
 There are 288 cell lines contained in the data.
 
 ```{r}
+data <- read.csv("rawPharmacoData.csv")
+
 length( levels( data$cellLine ) )
 ```
 
@@ -36,7 +38,10 @@ distributed, can also make evident potential
 problems with the data. Plot a histogram
 of drug viabilities. Does it look as one would
 expect from the description of the data?
-```
+```{r}
+ggplot( pharmacoData, aes( log2(viability) ) ) +
+    geom_histogram(fill = "white", colour="black") +
+    facet_wrap(~study)
 ```
 
 4. How many viability data points are within the
@@ -44,94 +49,20 @@ expected range according to the definition of viability (e.g. above 0
 and below 100)? Try to come up with explanations about
 the values that are out of range. Are these due to technical
 issues? Biology?
+```{r}
+sum( data$viability > 0 & data$viability < 100)
+```
 
 5. Read the csv file containing the summarized data files. What kind
 of variables are in the data? What does each column represents?
+```{r}
+datasum <- read.csv("summarizedPharmacoData.csv")
 
+str(datasum)
+```
 6. Plot a histogram of the viability scores as a function of the drug
 doses. Are stronger drug concentrations consistent with lower viability scores?
 ```{r}
-#Your code goes here
-
-
-data <- read.csv("rawPharmacoData.csv")
-datasum <- read.csv("summarizedPharmacoData.csv")
-
-str(data)
-
-dataCCLE <- data[data$study == "CCLE",]
-dataGDSC <- data[data$study == "GDSC",]
-unique(dataCCLE$concentration)
-
-
-
-
-ggplot( pharmacoData, aes( log2(viability) ) ) +
-    geom_histogram(fill = "white", colour="black") +
-    facet_wrap(~study)
-
-sum( data$viability > 0 & data$viability < 100)
-
-str(datasum)
-
 ggplot( pharmacoData, aes( viability, group=drug, colour=drug) ) +
     geom_density(fill="white", lwd=2, alpha=0.1) + xlim(0, 170)
-
-ggplot(aes(x=auc_GDSC, y=auc_CCLE), data=cellLinesSummary) +
-    geom_point(cex=0.5) +
-    facet_wrap(facets=~drug) +
-    xlab("GDSC AUC") +
-    ylab("CCLE AUC")
-
-cor.coef <- round(cor(datasum$auc_GDSC, datasum$auc_CCLE),2)
-ggplot(aes(x=auc_GDSC, y=auc_CCLE), data=cellLinesSummary) +
-    geom_point(cex=0.5) +
-    facet_wrap(facets=~drug) +
-    ggtitle(paste0("Correlation coefficient = ", cor.coef))+ 
-    xlab("GDSC AUC") +
-    ylab("CCLE AUC") +
-    geom_smooth(method='lm', se=FALSE)
-
-ggplot(aes(x=ic50_GDSC, y=ic50_CCLE), data=cellLinesSummary) +
-    geom_point(cex=0.5) +
-    facet_wrap(facets=~drug) +
-    xlab("GDSC ic50") +
-    ylab("CCLE ic50")
-
-cor.coef <- round(cor(datasum$ic50_GDSC, datasum$ic50_CCLE),2)
-ggplot(aes(x=ic50_GDSC, y=ic50_CCLE), data=cellLinesSummary) +
-    geom_point(cex=0.5) +
-    facet_wrap(facets=~drug) +
-    ggtitle(paste0("Correlation coefficient = ", cor.coef))+ 
-    xlab("GDSC ic50") +
-    ylab("CCLE ic50") +
-    geom_smooth(method='lm', se=FALSE)
-
-
-drugCorrs <- cellLinesSummary %>% 
-    group_by(drug) %>% summarise(Pearson_ic50=cor(-log10(ic50_GDSC/10^6),-log10(ic50_CCLE/10^6), method="pearson"),
-                                 Spearman_ic50=cor(-log10(ic50_GDSC/10^6),-log10(ic50_CCLE/10^6), method="spearman"))
-drugCorrs <- melt(drugCorrs)
-colnames(drugCorrs) <- c("Drug", "Measure", "Correlation")
-
-drugCorrs_IC50 <- drugCorrs[grep("ic50", drugCorrs$Measure),]
-ggplot(data=drugCorrs_IC50, aes(x=Drug, y=Correlation, fill=Measure, group=Measure)) +
-  geom_bar(stat="identity", position=position_dodge(), colour="black") + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_fill_grey()
-
-drugCorrss <- cellLinesSummary %>% 
-    group_by(drug) %>% summarise(Pearson_auc=cor(-log10(auc_GDSC/10^6),-log10(auc_CCLE/10^6), method="pearson"),
-                                 Spearman_auc=cor(-log10(auc_GDSC/10^6),-log10(auc_CCLE/10^6), method="spearman"))
-drugCorrss <- melt(drugCorrss)
-colnames(drugCorrss) <- c("Drug", "Measure", "Correlation")
-
-drugCorrs_auc <- drugCorrss[grep("ic50", drugCorrss$Measure),]
-ggplot(data=drugCorrs_auc, aes(x=Drug, y=Correlation, fill=Measure, group=Measure)) +
-  geom_bar(stat="identity", position=position_dodge(), colour="black") + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  scale_fill_grey()
-
-dcor.t(datasum$ic50_GDSC,datasum$ic50_CCLE)
-dcor.ttest(datasum$ic50_GDSC,datasum$ic50_CCLE)
 ```
