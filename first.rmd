@@ -1,10 +1,58 @@
+---
+title: replicaton assigment
+team: the Beginners
+date: october 2019
+authors: Edward Garcia, Paula Muñoz, Jan Melendez y Alicia Figueroa
+---
 ```{r}
-#Your code goes here
+#library
+
 library(ggplot2)
 library(knitr)
 library(dplyr)
 library(reshape2)
 library(energy)
+```
+## Questions
+
+1. How many cell-lines are contained in the data?
+There are 288 cell lines contained in the data.
+
+```{r}
+length( levels( data$cellLine ) )
+```
+
+2. What drug concentrations were used in each study?
+in each study there were used 32 GDSC concentrations and 8 CClE concentrations.
+
+```{r}
+tapply( data$concentration, data$study, function(x){
+        length( unique( x ) )
+    })
+```
+
+3. Histograms, appart from telling how is the data
+distributed, can also make evident potential
+problems with the data. Plot a histogram
+of drug viabilities. Does it look as one would
+expect from the description of the data?
+```
+```
+
+4. How many viability data points are within the
+expected range according to the definition of viability (e.g. above 0 
+and below 100)? Try to come up with explanations about
+the values that are out of range. Are these due to technical
+issues? Biology?
+
+5. Read the csv file containing the summarized data files. What kind
+of variables are in the data? What does each column represents?
+
+6. Plot a histogram of the viability scores as a function of the drug
+doses. Are stronger drug concentrations consistent with lower viability scores?
+```{r}
+#Your code goes here
+
 
 data <- read.csv("rawPharmacoData.csv")
 datasum <- read.csv("summarizedPharmacoData.csv")
@@ -15,11 +63,8 @@ dataCCLE <- data[data$study == "CCLE",]
 dataGDSC <- data[data$study == "GDSC",]
 unique(dataCCLE$concentration)
 
-length( levels( data$cellLine ) )
 
-tapply( data$concentration, data$study, function(x){
-        length( unique( x ) )
-    })
+
 
 ggplot( pharmacoData, aes( log2(viability) ) ) +
     geom_histogram(fill = "white", colour="black") +
