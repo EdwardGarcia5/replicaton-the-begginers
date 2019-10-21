@@ -1,10 +1,10 @@
 # replicaton-the-begginers
 
-* [`first_part.Rmd`](https://github.com/dinojgarcia/replicaton-the-begginers/blob/master/first_part.Rmd): aqui encontaras la primera parte del trabajo con las primeras seis preguntas.
+* [`first_part.Rmd`](https://github.com/dinojgarcia/replicaton-the-begginers/blob/master/first_part.Rmd) : aqui encontraras la primera parte del trabajo con las primeras seis preguntas.
 
-* [`second_part.Rmd`](https://github.com/dinojgarcia/replicaton-the-begginers/blob/master/second_part.Rmd)
+* [`second_part.Rmd`](https://github.com/dinojgarcia/replicaton-the-begginers/blob/master/second_part.Rmd) : aqui encontraras la segunda parte del trabajo con siete preguntas.
 
-* [`third_part.Rmd`](https://github.com/dinojgarcia/replicaton-the-begginers/blob/master/thrid_part.Rmd)
+* [`third_part.Rmd`](https://github.com/dinojgarcia/replicaton-the-begginers/blob/master/thrid_part.Rmd) : aqui encontraras la tercera parte del trabajo con siete preguntas.
 
 ## Datasets:
 
