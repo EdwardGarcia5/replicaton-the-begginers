@@ -1,6 +1,6 @@
 # replicaton-the-begginers
 
-## Contestaciones
+## Contestaciones:
 
 * [`first_part.Rmd`](https://github.com/dinojgarcia/replicaton-the-begginers/blob/master/first_part.Rmd) : aqui encontraras la primera parte del trabajo con las primeras seis preguntas.
 
